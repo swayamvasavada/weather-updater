@@ -43,8 +43,8 @@ bot.command('unsubscribe', ctx => {
     })
 });
 
-cron.schedule('* * * * *', () => {
-    console.log('running a task every minute');
+cron.schedule('* 7,14,18 * * *', () => {
+    // Runnin daily at 7:00, 14:00 (2:00 pm), 18:00 (6:00 pm)
 
     User.fetch().then(users => {
         if (users) {
