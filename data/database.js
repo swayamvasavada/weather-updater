@@ -1,11 +1,8 @@
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 let database;
-let monogUrl = 'mongodb://localhost:27017';
+let monogUrl = process.env.MONGO_URL;
 
-if (process.env.MONGO_URL) {
-    monogUrl = process.env.MONGO_URL;
-}
 
 async function connect() {
     const client = await MongoClient.connect(monogUrl);

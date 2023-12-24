@@ -49,7 +49,6 @@ cron.schedule('* 7,14,18 * * *', () => {
     User.fetch().then(users => {
         if (users) {
             users.forEach(element => {
-                console.log('test1');
                 getWeather().then(weatherReport => {
                     bot.telegram.sendMessage(element.userId, weatherReport);
                 });
@@ -59,5 +58,5 @@ cron.schedule('* 7,14,18 * * *', () => {
 });
 
 db.connectToDatabase().then(function () {
-    app.listen(3000);
+    app.listen(process.env.PORT);
 });
