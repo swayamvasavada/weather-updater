@@ -1,12 +1,12 @@
+const ObjectId = require('mongodb').ObjectId;
 const db = require('../data/database');
 
 class User {
-    constructor(id, name) {
+    constructor(id) {
         this.id = id;
-        this.name = name;
     }
 
-    async subscribe() {
+    async subscribe(name) {
         const result = await db.getDb().collection('users').find({ userId: this.id }).toArray();
 
         if (result.length > 0) {
@@ -15,7 +15,8 @@ class User {
 
         await db.getDb().collection('users').insertOne({
             userId: this.id,
-            name: this.name
+            name: name,
+            blocked: false
         });
 
         return 'You\'ve successfully subscribed!';
@@ -33,9 +34,25 @@ class User {
     }
 
     static async fetch() {
-        const result = await db.getDb().collection('users').find({}, { projection: { _id: 0 ,userId: 1 } }).toArray();
-        console.log(result);
+        const result = await db.getDb().collection('users').find({}).toArray();
 
+        return result;
+    }
+
+    async block() {
+        const result = await db.getDb().collection('users').updateOne({ _id: new ObjectId(this.id) }, { $set: { blocked: true } });
+
+        return result;
+    }
+
+    async unblock() {
+        const result = await db.getDb().collection('users').updateOne({ _id: new ObjectId(this.id) }, { $set: { blocked: false } });
+
+        return result;
+    }
+
+    async delete() {
+        const result = await db.getDb().collection('users').deleteOne({ _id: new ObjectId(this.id) });
         return result;
     }
 }

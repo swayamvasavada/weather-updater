@@ -6,13 +6,17 @@ const { Telegraf } = require('telegraf');
 const db = require('./data/database');
 const User = require('./models/manage-subscription');
 const getWeather = require('./util/weather');
+const routes = require('./routes/routes');
+const enableCors = require('./middleware/cors');
 
 const app = express();
 dotenv.config();
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-app.use(express.static('static'))
+app.use(enableCors)
+app.use(express.static('static'));
 app.use(express.json());
+app.use(routes);
 
 
 // expressApp.use(bot.webhookCallback('/secret-path'))
@@ -20,15 +24,14 @@ app.use(express.json());
 bot.launch();
 
 bot.command('start', ctx => {
-    console.log(ctx.from)
     bot.telegram.sendMessage(ctx.chat.id, 'Hello there! Welcome to the Weather updater, You can /subscribe to get an update ', {
     })
 })
 
 bot.command('subscribe', ctx => {
-    const addUser = new User(ctx.message.from.id, ctx.message.from.first_name);
+    const addUser = new User(ctx.message.from.id);
 
-    addUser.subscribe().then(message => {
+    addUser.subscribe(ctx.message.from.first_name + ' ' + ctx.from.last_name).then(message => {
         bot.telegram.sendMessage(ctx.chat.id, message, {
         })
     })
